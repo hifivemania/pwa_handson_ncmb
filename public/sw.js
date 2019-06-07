@@ -10,6 +10,7 @@ const urlsToCache = [
   "/vendors/hifive/h5.css",
   "/vendors/hifive/h5.js.map",
   "/vendors/hifive/h5.dev.js",
+  "/vendors/ncmb/ncmb.min.js",
   "/manifest.json",
   "/icon.png",
   "/js/app.push.js",
@@ -53,9 +54,9 @@ self.addEventListener('fetch', async (event) => {
   // ここに記述してください（第4章）
 });
 
-// Todoの一覧を更新する処理（第5章）
+// Todoの一覧を更新する処理（第6章）
 
-// Webプッシュ通知の処理（第7章）
+// Webプッシュ通知の処理（第8章）
 self.addEventListener('push', ev => {
   // payloadの取得
   const {title, msg, icon} = ev.data.json();

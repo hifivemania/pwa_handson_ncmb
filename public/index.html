@@ -56,9 +56,9 @@
       <script type="text/ejs" id="listTemplate">
         [% for (var i = 0; i < todos.length; i += 1) { %]
           <tr>
-            <td>[%= todos[i] %]</td>
+            <td>[%= todos[i].get('todo') %]</td>
             <td>
-              <span class="delete" data-todo="[%= todos[i] %]">削除</span>
+              <span class="delete" data-todo="[%= todos[i].get('objectId') %]">削除</span>
             </td>
           </tr>
         [% } %]
@@ -69,6 +69,7 @@
     <script src="/vendors/jquery/jquery.min.js"></script>
     <script src="/vendors/hifive/h5.js"></script>
     <script src="/vendors/hifive/ejs-h5mod.js"></script>
+    <script src="/vendors/ncmb/ncmb.min.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/todo.js"></script>
   </body>

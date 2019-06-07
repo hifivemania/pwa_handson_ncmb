@@ -7,7 +7,7 @@ if ('serviceWorker' in navigator) {
       registration.onupdatefound = function() {
         console.log('アップデートがあります！');
       }
-      // WebPushの処理（6章で行います）
+      // WebPushの処理（7章で行います）
     })
     .catch(function(err) {
       // 登録失敗 :(

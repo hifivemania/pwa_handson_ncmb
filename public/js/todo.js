@@ -1,5 +1,10 @@
-var TODO = 'TODO';
-var DOMAIN = 'http://localhost:3000';
+// NCMBのキーを設定します
+var applicationKey = 'APPLICATION_KEY';
+var clientKey = 'CLIENT_KEY';
+var ncmb = new NCMB(applicationKey, clientKey);
+var className = 'Todo';
+var Todo = ncmb.DataStore(className);
+const Url = 'https://' + ncmb.fqdn + '/' + ncmb.version + '/classes/' + className;
 
 // オフライン時に追加/削除するTodo入れておくキュー
 var queues = {add: [], delete: []};
@@ -24,21 +29,19 @@ $(function() {
     __ready: function() {
       var me = this;
       // サーバから取得
-      $.ajax({
-        url: DOMAIN + '/todos/' + TODO,
-        type: 'GET'
-      })
-      .then(function(result) {
-        // 結果を変数に入れておく
-        me.__todos = result;
-        // 表示を更新
-        me.updateView();
-        
-        // キューを処理
-        if (navigator.onLine) {
-          me.executeQueue(queues);
-        }
-      })
+      Todo
+        .fetchAll()
+        .then(function(result) {
+          // 結果を変数に入れておく
+          me.__todos = result;
+          // 表示を更新
+          me.updateView();
+          
+          // キューを処理
+          if (navigator.onLine) {
+            me.executeQueue(queues);
+          }
+        })
     },
     // Todoの登録処理
     'button click': function(context, $el) {
@@ -49,7 +52,7 @@ $(function() {
       this.addTodo(todo)
         .then(function(result) {
           // サーバから取得したTodoを追加
-          me.__todos.push(result.todo);
+          me.__todos.push(result);
           // 表示を更新
           me.updateView();
           // 入力欄を消す
@@ -64,7 +67,7 @@ $(function() {
         .then(function(result) {
           // 変数からタスクを消す
           me.__todos = me.__todos.filter(function(t) {
-            return todo != t;
+            return todo != t.get('objectId');
           });
           // 表示を更新
           me.updateView();
@@ -99,25 +102,22 @@ $(function() {
       this.view.update('#list', 'listTemplate', {
         todos: this.__todos
       });
-      // Service Workerのキャッシュを更新します（第5章）
+      // Service Workerのキャッシュを更新します（第6章）
     },
     // Todoを追加する処理
     addTodo: function(todo) {
       return new Promise(function(res, rej) {
-        // オフライン時の処理（第6章で追加）
+        // オフライン時の処理（第7章で追加）
         
         // オンライン時の処理
         // サーバに登録
-        $.ajax({
-          url: DOMAIN + '/todos/' + TODO,
-          type: 'POST',
-          data: {
-            todo: todo
-          }
-        })
-        .then(function(result) {
-          res(result)
-        });
+        var item = new Todo;
+        item
+          .set('todo', todo)
+          .save()
+          .then(function(result) {
+            res(result)
+          });
       })
     },
     // Todoを削除する処理
@@ -130,17 +130,18 @@ $(function() {
           return res({todo});
         }
         // オンライン時はサーバに送信
-        $.ajax({
-          url: DOMAIN + '/todos/' + TODO + '/' + todo,
-          type: 'DELETE'
-        })
-        .then(function(result) {
-          return res(todo);
-        })
+        var item = new Todo;
+        item
+          .set('objectId', todo)
+          .delete()
+          .then(function(result) {
+            return res(todo);
+          })
       })
     },
-    // オンライン復帰時の処理（第6章用）
+    // オンライン復帰時の処理（第7章用）
     '{window} online': function(context) {
+      
     }
   };
   h5.core.controller('.container', todoController);
