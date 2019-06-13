@@ -63,7 +63,7 @@ $(function() {
     '.delete click': function(context, $el) {
       var todo = $el.data('todo');
       var me = this;
-      this.deleteTodo(todo)
+      this.deleteTodo(todo, $el.data('text'))
         .then(function(result) {
           // 変数からタスクを消す
           me.__todos = me.__todos.filter(function(t) {
@@ -108,8 +108,6 @@ $(function() {
     addTodo: function(todo) {
       return new Promise(function(res, rej) {
         // オフライン時の処理（第7章で追加）
-        
-        // オンライン時の処理
         // サーバに登録
         var item = new Todo;
         item
@@ -121,8 +119,15 @@ $(function() {
       })
     },
     // Todoを削除する処理
-    deleteTodo: function(todo) {
+    deleteTodo: function(todo, text) {
       return new Promise(function(res, rej) {
+        // ローカルデータであれば何もしない
+        if (todo.match(/^local_.*/)) {
+          // 追加用のキューを削除
+          queues.add = queues.add.filter(t => t != text);
+          localStorage.setItem('addQueue', JSON.stringify(queues.add));
+          return res(todo);
+        }
         // オフライン時
         if (!navigator.onLine) {
           queues.delete.push(todo);

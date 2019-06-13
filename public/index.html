@@ -58,7 +58,7 @@
           <tr>
             <td>[%= todos[i].get('todo') %]</td>
             <td>
-              <span class="delete" data-todo="[%= todos[i].get('objectId') %]">削除</span>
+              <span class="delete" data-todo="[%= todos[i].get('objectId') %]" data-text="[%= todos[i].get('todo') %]">削除</span>
             </td>
           </tr>
         [% } %]
